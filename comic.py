@@ -2,6 +2,7 @@ import os
 
 import bs4
 import requests
+import cv2 as cv2
 
 
 def getComic():
@@ -19,5 +20,20 @@ def getComic():
     return comic_name
 
 
+def getPanels(comic_name):
+    img = cv2.imread('comics/' + comic_name)
+    height, width, channels = img.shape
+    img0 = img[5:height - 14, 5:int(width / 3) - 7]
+    height0, width0, channels = img0.shape
+    img0[height0 - 18:height0, width0 - 34:width0] = [255, 255, 255]
+    img1 = img[5:height - 14, int(width / 3) * 2 + 8:width - 5]
+    height1, width1, channels = img1.shape
+    img1[height1 - 18:height1, 0:34] = [255, 255, 255]
+    cv2.imwrite('comics/' + comic_name.split('.')[0] + '_0.' + comic_name.split('.')[1], img0)
+    cv2.imwrite('comics/' + comic_name.split('.')[0] + '_1.' + comic_name.split('.')[1], img1)
+    os.unlink('comics/'+comic_name)
+    return comic_name
+
 if __name__ == "__main__":
-    getComic()
+    for i in range(0,100):
+        getPanels(getComic())
